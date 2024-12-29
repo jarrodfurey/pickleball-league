@@ -1,11 +1,11 @@
 // server.js
+
 require("dotenv").config(); // Load environment variables from .env
 
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const basicAuth = require("express-basic-auth");
-require("dotenv").config();
 const { body, validationResult } = require("express-validator");
 
 const app = express();
@@ -34,7 +34,6 @@ app.use(
 
 // Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, "public")));
-
 // --- Your API Routes Below ---
 
 // Helper Function: Read Data
@@ -288,7 +287,7 @@ app.post(
 );
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port from environment variable
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
