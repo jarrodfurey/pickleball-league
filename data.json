@@ -1,0 +1,126 @@
+{
+  "players": [
+    {
+      "name": "Kyu",
+      "matchesPlayed": 1,
+      "wins": 1,
+      "winRate": "100.0",
+      "points": 2
+    },
+    {
+      "name": "Rory",
+      "matchesPlayed": 1,
+      "wins": 1,
+      "winRate": "100.0",
+      "points": 2
+    },
+    {
+      "name": "Graham",
+      "matchesPlayed": 1,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Conz",
+      "matchesPlayed": 1,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Matt E",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Seth",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Toole",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Cole",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Mandre",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Jerry",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Jack",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Greg",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Bonez",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Turner",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    },
+    {
+      "name": "Galdy",
+      "matchesPlayed": 0,
+      "wins": 0,
+      "winRate": "0.0",
+      "points": 0
+    }
+  ],
+  "matches": [
+    {
+      "id": "match1",
+      "team1": {
+        "player1": "Kyu",
+        "player2": "Rory"
+      },
+      "team2": {
+        "player1": "Graham",
+        "player2": "Conz"
+      },
+      "team1Score": 11,
+      "team2Score": 7,
+      "winner": "team1",
+      "date": "2024-01-15"
+    }
+  ]
+}

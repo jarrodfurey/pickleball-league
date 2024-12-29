@@ -1,0 +1,277 @@
+<!-- public/admin.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Seoul Pickleball League</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #333;
+      }
+      form {
+        margin-bottom: 40px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+      .response {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 3px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Seoul Pickleball League - Admin Panel</h1>
+
+    <!-- Create Match Form -->
+    <section>
+      <h2>Create a New Match</h2>
+      <form id="createMatchForm">
+        <div>
+          <label for="matchId">Match ID:</label>
+          <input type="text" id="matchId" name="matchId" required />
+        </div>
+
+        <h3>Team 1</h3>
+        <div>
+          <label for="team1Player1">Player 1:</label>
+          <input type="text" id="team1Player1" name="team1.player1" required />
+        </div>
+        <div>
+          <label for="team1Player2">Player 2:</label>
+          <input type="text" id="team1Player2" name="team1.player2" required />
+        </div>
+
+        <h3>Team 2</h3>
+        <div>
+          <label for="team2Player1">Player 1:</label>
+          <input type="text" id="team2Player1" name="team2.player1" required />
+        </div>
+        <div>
+          <label for="team2Player2">Player 2:</label>
+          <input type="text" id="team2Player2" name="team2.player2" required />
+        </div>
+
+        <button type="submit">Create Match</button>
+      </form>
+      <div id="createMatchResponse" class="response"></div>
+    </section>
+
+    <!-- Update Match Results Form -->
+    <section>
+      <h2>Update Match Results</h2>
+      <form id="updateMatchForm">
+        <div>
+          <label for="updateMatchId">Match ID:</label>
+          <input type="text" id="updateMatchId" name="matchId" required />
+        </div>
+
+        <h3>Scores</h3>
+        <div>
+          <label for="team1Score">Team 1 Score:</label>
+          <input
+            type="number"
+            id="team1Score"
+            name="team1Score"
+            min="0"
+            required
+          />
+        </div>
+        <div>
+          <label for="team2Score">Team 2 Score:</label>
+          <input
+            type="number"
+            id="team2Score"
+            name="team2Score"
+            min="0"
+            required
+          />
+        </div>
+
+        <button type="submit">Update Match</button>
+      </form>
+      <div id="updateMatchResponse" class="response"></div>
+    </section>
+
+    <script>
+      // public/admin.js
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const createMatchForm = document.getElementById("createMatchForm");
+        const updateMatchForm = document.getElementById("updateMatchForm");
+        const createMatchResponse = document.getElementById(
+          "createMatchResponse"
+        );
+        const updateMatchResponse = document.getElementById(
+          "updateMatchResponse"
+        );
+
+        // Helper Function to Display Responses
+        const displayResponse = (element, message, isSuccess) => {
+          element.innerHTML = message;
+          if (isSuccess) {
+            element.classList.add("success");
+            element.classList.remove("error");
+          } else {
+            element.classList.add("error");
+            element.classList.remove("success");
+          }
+        };
+
+        // Handle Create Match Form Submission
+        createMatchForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(createMatchForm);
+          const data = {
+            matchId: formData.get("matchId").trim(),
+            team1: {
+              player1: formData.get("team1.player1").trim(),
+              player2: formData.get("team1.player2").trim(),
+            },
+            team2: {
+              player1: formData.get("team2.player1").trim(),
+              player2: formData.get("team2.player2").trim(),
+            },
+          };
+
+          // Basic Frontend Validation
+          if (data.team1.player1 === data.team1.player2) {
+            displayResponse(
+              createMatchResponse,
+              "Team 1 cannot have duplicate players.",
+              false
+            );
+            return;
+          }
+          if (data.team2.player1 === data.team2.player2) {
+            displayResponse(
+              updateMatchResponse,
+              "Team 2 cannot have duplicate players.",
+              false
+            );
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/create-match", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+
+            if (res.status === 201) {
+              displayResponse(
+                createMatchResponse,
+                "Match created successfully.",
+                true
+              );
+              createMatchForm.reset();
+            } else {
+              const errors = result.errors
+                ? result.errors.map((err) => `<li>${err.msg}</li>`).join("")
+                : `<p>${result.error}</p>`;
+              displayResponse(createMatchResponse, `<ul>${errors}</ul>`, false);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            displayResponse(
+              createMatchResponse,
+              "An unexpected error occurred.",
+              false
+            );
+          }
+        });
+
+        // Handle Update Match Form Submission
+        updateMatchForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(updateMatchForm);
+          const data = {
+            matchId: formData.get("matchId").trim(),
+            team1Score: formData.get("team1Score"),
+            team2Score: formData.get("team2Score"),
+          };
+
+          try {
+            const res = await fetch("/api/update-match", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+
+            if (res.status === 200) {
+              displayResponse(
+                updateMatchResponse,
+                "Match updated successfully.",
+                true
+              );
+              updateMatchForm.reset();
+            } else {
+              const errors = result.errors
+                ? result.errors.map((err) => `<li>${err.msg}</li>`).join("")
+                : `<p>${result.error}</p>`;
+              displayResponse(updateMatchResponse, `<ul>${errors}</ul>`, false);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            displayResponse(
+              updateMatchResponse,
+              "An unexpected error occurred.",
+              false
+            );
+          }
+        });
+      }); // <-- Closing brace for DOMContentLoaded
+    </script>
+  </body>
+</html>

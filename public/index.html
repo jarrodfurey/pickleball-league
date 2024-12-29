@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seoul Pickleball League</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- External CSS for easier management -->
+  </head>
+  <body>
+    <!-- Home Page -->
+    <header>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="schedule.html">Schedule</a>
+        <a href="results.html">Results</a>
+        <a href="rules.html">Rules</a>
+        <a href="announcements.html">Announcements</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <!-- Hero or main banner for your site -->
+    <div class="hero-section" id="hero">
+      <h1>Welcome to the Seoul Pickleball League!</h1>
+      <p>Join us for exciting matches and friendly competition.</p>
+      <a href="schedule.html" class="cta">View Full Schedule</a>
+      <a href="leaderboard.html" class="cta">View Full Leaderboard</a>
+    </div>
+
+    <!-- Container for the Previews -->
+    <div class="container">
+      <section id="schedule-preview">
+        <h2>Upcoming Matches</h2>
+        <div id="schedulePreviewContent">
+          <!-- JavaScript will populate upcoming matches here -->
+        </div>
+      </section>
+
+      <section id="leaderboard-preview">
+        <h2>Top Players</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardPreviewContent">
+            <!-- JavaScript will populate top players here -->
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <footer>
+      <p>&copy; 2024 Seoul Pickleball League. All rights reserved.</p>
+    </footer>
+
+    <script src="home.js"></script>
+  </body>
+</html>

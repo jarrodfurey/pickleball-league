@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Player Details - Seoul Pickleball League</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="schedule.html">Schedule</a>
+        <a href="results.html">Results</a>
+        <a href="rules.html">Rules</a>
+        <a href="announcements.html">Announcements</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <!-- Main container around content -->
+    <div class="container">
+      <!-- Hero section: big header for Player Name + optional subtitle -->
+      <div class="player-hero">
+        <h1 id="playerName">Loading...</h1>
+        <h2>Player Details & History</h2>
+      </div>
+
+      <!-- Player Matches Table -->
+      <table class="matches">
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>Date</th>
+            <th>Your Team</th>
+            <th>Opponent Team</th>
+            <th>Your Team Score</th>
+            <th>Opponent Team Score</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="matchesBody">
+          <!-- Populated via player.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <script src="player.js"></script>
+  </body>
+</html>
