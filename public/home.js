@@ -1,86 +1,172 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    // 1. Fetch the schedule data
-    // Option A: If you have an endpoint /api/matches that includes "week" data
-    const scheduleResponse = await fetch("/api/matches");
-    const matches = await scheduleResponse.json();
+// public/home.js
 
-    // 2. Identify "next" matches
-    // This part depends on how your data is structured:
-    //   - If each match includes a date: find matches whose date is >= today
-    //   - Sort by date ascending
-    //   - Take the first 3 matches
-    const upcomingMatches = getNextMatches(matches, 3);
+document.addEventListener("DOMContentLoaded", async () => {
+  // Display upcoming matches
+  await displayUpcomingMatches();
+
+  // Display top players
+  await displayTopPlayers();
+});
+
+/**
+ * Fetches matches and displays them in a single, compact table.
+ */
+async function displayUpcomingMatches() {
+  try {
+    const response = await fetch("/api/matches");
+    const matches = await response.json();
+
+    // Determine current week's Monday -> Sunday
+    const { monday, sunday } = getCurrentWeekRange();
+
+    // Filter matches within the current week
+    const currentWeekMatches = matches.filter((match) => {
+      const matchDate = new Date(match.date);
+      return matchDate >= monday && matchDate <= sunday;
+    });
 
     const schedulePreviewContent = document.getElementById(
       "schedulePreviewContent"
     );
+    schedulePreviewContent.innerHTML = ""; // Clear existing content
 
-    if (upcomingMatches.length === 0) {
-      schedulePreviewContent.textContent = "No upcoming matches.";
-    } else {
-      // Create a small list or table
-      const ul = document.createElement("ul");
-      upcomingMatches.forEach((match) => {
-        const li = document.createElement("li");
-        li.textContent = `${match.id}: ${match.team1.player1}/${match.team1.player2} vs ${match.team2.player1}/${match.team2.player2} on ${match.date}`;
-        ul.appendChild(li);
-      });
-      schedulePreviewContent.appendChild(ul);
+    if (!currentWeekMatches.length) {
+      schedulePreviewContent.innerHTML =
+        "<p>No matches scheduled for the current week.</p>";
+      return;
     }
+
+    // Create a table for upcoming matches
+    const table = document.createElement("table");
+    table.classList.add("upcoming-matches-table");
+
+    // Table header
+    table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Team 1</th>
+            <th>Team 2</th>
+            <th>Score</th> <!-- optional column -->
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+    const tbody = table.querySelector("tbody");
+
+    // Sort matches by date ascending (in case they're not sorted)
+    currentWeekMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Populate rows
+    currentWeekMatches.forEach((match) => {
+      const row = document.createElement("tr");
+
+      // Date cell
+      const dateCell = document.createElement("td");
+      const matchDate = new Date(match.date);
+      dateCell.textContent = matchDate.toDateString(); // e.g. "Mon Jan 15 2024"
+      row.appendChild(dateCell);
+
+      // Team 1 cell
+      const team1Cell = document.createElement("td");
+      team1Cell.textContent = `${match.team1.player1} & ${match.team1.player2}`;
+      row.appendChild(team1Cell);
+
+      // Team 2 cell
+      const team2Cell = document.createElement("td");
+      team2Cell.textContent = `${match.team2.player1} & ${match.team2.player2}`;
+      row.appendChild(team2Cell);
+
+      // Score cell (optional)
+      const scoreCell = document.createElement("td");
+      // If match.team1Score is null => unplayed
+      if (match.team1Score !== null && match.team2Score !== null) {
+        scoreCell.textContent = `${match.team1Score} - ${match.team2Score}`;
+      } else {
+        scoreCell.textContent = "-"; // Not played or not updated
+      }
+      row.appendChild(scoreCell);
+
+      tbody.appendChild(row);
+    });
+
+    schedulePreviewContent.appendChild(table);
   } catch (error) {
     console.error("Error fetching schedule preview:", error);
+    const schedulePreviewContent = document.getElementById(
+      "schedulePreviewContent"
+    );
+    schedulePreviewContent.innerHTML =
+      "<p>An error occurred while loading upcoming matches.</p>";
   }
+}
 
-  // Now fetch the top players
+/**
+ * Fetches the top players and displays them in a small table
+ */
+async function displayTopPlayers() {
   try {
     const leaderboardResponse = await fetch("/api/leaderboard");
     let players = await leaderboardResponse.json();
 
-    // Sort or assume it's already sorted by points
-    // Take the top 3
+    // Take the top 3 players (or however many you want)
     players = players.slice(0, 3);
 
     const leaderboardPreviewContent = document.getElementById(
       "leaderboardPreviewContent"
     );
+    leaderboardPreviewContent.innerHTML = ""; // Clear existing content
 
-    if (players.length === 0) {
+    if (!players.length) {
       leaderboardPreviewContent.innerHTML =
         "<tr><td colspan='3'>No players found.</td></tr>";
-    } else {
-      players.forEach((player, index) => {
-        const row = document.createElement("tr");
-
-        const rankCell = document.createElement("td");
-        rankCell.textContent = index + 1;
-        row.appendChild(rankCell);
-
-        const nameCell = document.createElement("td");
-        nameCell.textContent = player.name;
-        row.appendChild(nameCell);
-
-        const pointsCell = document.createElement("td");
-        pointsCell.textContent = player.points;
-        row.appendChild(pointsCell);
-
-        leaderboardPreviewContent.appendChild(row);
-      });
+      return;
     }
+
+    players.forEach((player, index) => {
+      const row = document.createElement("tr");
+
+      // Rank
+      const rankCell = document.createElement("td");
+      rankCell.textContent = index + 1;
+      row.appendChild(rankCell);
+
+      // Name
+      const nameCell = document.createElement("td");
+      nameCell.textContent = player.name;
+      row.appendChild(nameCell);
+
+      // Points
+      const pointsCell = document.createElement("td");
+      pointsCell.textContent = player.points;
+      row.appendChild(pointsCell);
+
+      leaderboardPreviewContent.appendChild(row);
+    });
   } catch (error) {
     console.error("Error fetching leaderboard preview:", error);
+    const leaderboardPreviewContent = document.getElementById(
+      "leaderboardPreviewContent"
+    );
+    leaderboardPreviewContent.innerHTML =
+      "<tr><td colspan='3'>An error occurred while loading the leaderboard.</td></tr>";
   }
-});
+}
 
 /**
- * Sample function: getNextMatches
- * Sort by date ascending, then pick the earliest "count" matches
- * If your match objects have a "date" property, you can parse & compare.
+ * Returns start of the current week (Monday) and end of the current week (Sunday).
  */
-function getNextMatches(matches, count) {
-  // parseInt or new Date(...) for match.date
-  // For example, if your date is a string '2024-01-15'
-  const upcoming = matches.filter((m) => new Date(m.date) >= new Date());
-  upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-  return upcoming.slice(0, count);
+function getCurrentWeekRange() {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // Sunday = 0 ... Saturday = 6
+  const monday = new Date(today);
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  monday.setDate(today.getDate() + diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  return { monday, sunday };
 }

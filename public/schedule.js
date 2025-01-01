@@ -1,3 +1,6 @@
+// schedule.js
+
+// Array of week data
 const weeks = [
   {
     week: 1,
@@ -365,11 +368,59 @@ const scheduleSection = document.querySelector("#schedule");
 const weeksGrid = scheduleSection.querySelector(".weeks-grid");
 const weekDetailsContainer = document.getElementById("week-details");
 
+// Function to format dates with suffixes (e.g., "Jan. 4th")
+function getFormattedDate(date) {
+  const options = { month: "short" };
+  const month = new Intl.DateTimeFormat("en-US", options).format(date);
+  const day = date.getDate();
+  let suffix = "th";
+
+  if (day % 10 === 1 && day !== 11) suffix = "st";
+  else if (day % 10 === 2 && day !== 12) suffix = "nd";
+  else if (day % 10 === 3 && day !== 13) suffix = "rd";
+
+  return `${month}. ${day}${suffix}`;
+}
+
+// Define the starting date (January 4th, 2025)
+const startDate = new Date(2025, 0, 4); // Months are zero-indexed (0 = January)
+
+// Array to store week date ranges
+const weekDateRanges = [];
+
 // Generate week buttons and content
 weeks.forEach((weekData, index) => {
-  // Create button for the week
+  // Calculate the date for the current week
+  const weekDate = new Date(
+    startDate.getTime() + index * 7 * 24 * 60 * 60 * 1000
+  );
+  const formattedDate = getFormattedDate(weekDate);
+
+  // Define week start and end dates
+  let weekStartDate, weekEndDate;
+
+  if (index === 0) {
+    // Week 1: Only the startDate (January 4th, 2025)
+    weekStartDate = new Date(weekDate);
+    weekEndDate = new Date(weekDate);
+  } else {
+    // Subsequent Weeks: Start from the day after the previous week's end date
+    weekStartDate = new Date(weekDate.getTime() + 1 * 24 * 60 * 60 * 1000); // Add 1 day
+    weekEndDate = new Date(weekStartDate.getTime() + 6 * 24 * 60 * 60 * 1000); // Add 6 days
+  }
+
+  // Store the date range for current week
+  weekDateRanges.push({
+    week: weekData.week,
+    start: weekStartDate,
+    end: weekEndDate,
+  });
+
+  // Create button for the week with formatted date
   const weekButton = document.createElement("button");
-  weekButton.textContent = `Week ${weekData.week}`;
+  weekButton.textContent = formattedDate; // Display date (e.g., "Jan. 4th")
+  // Optional: To include week number, use the following line instead:
+  // weekButton.textContent = `Week ${weekData.week} - ${formattedDate}`;
   weekButton.classList.add("week-button");
   weekButton.setAttribute("data-week", index);
 
@@ -406,12 +457,6 @@ weeks.forEach((weekData, index) => {
   weekDetails.classList.add("week-details");
   weekDetails.style.display = "none";
 
-  const teams = document.createElement("h3");
-  teams.textContent = "Teams";
-
-  const teamsDetails = document.createElement("p");
-  teamsDetails.textContent = weekData.teams;
-
   const matchups = document.createElement("h3");
   matchups.textContent = "Matchups";
 
@@ -429,10 +474,37 @@ weeks.forEach((weekData, index) => {
   matchupTable.appendChild(tableHead);
   matchupTable.appendChild(tableBody);
 
-  weekDetails.appendChild(teams);
-  weekDetails.appendChild(teamsDetails);
   weekDetails.appendChild(matchups);
   weekDetails.appendChild(matchupTable);
 
   weekDetailsContainer.appendChild(weekDetails);
+});
+
+// Function to determine the current week based on today's date
+function determineCurrentWeek() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize time to midnight for accurate comparison
+
+  for (let i = 0; i < weekDateRanges.length; i++) {
+    const week = weekDateRanges[i];
+    if (today <= week.end) {
+      return i;
+    }
+  }
+
+  // If today is after all weeks, return the last week index
+  return weekDateRanges.length - 1;
+}
+
+// Automatically select the current week on page load
+document.addEventListener("DOMContentLoaded", () => {
+  const currentWeekIndex = determineCurrentWeek();
+
+  // Find the corresponding week button
+  const currentWeekButton = weeksGrid.querySelector(
+    `.week-button[data-week="${currentWeekIndex}"]`
+  );
+  if (currentWeekButton) {
+    currentWeekButton.click();
+  }
 });
