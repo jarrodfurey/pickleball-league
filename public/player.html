@@ -1,13 +1,15 @@
+<!-- player.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>Player Details - Seoul Pickleball League</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header>
-      <nav>
+      <!-- Navigation Bar -->
+      <nav id="navbar">
         <a href="index.html">Home</a>
         <a href="leaderboard.html">Leaderboard</a>
         <a href="schedule.html">Schedule</a>
@@ -17,17 +19,27 @@
         <a href="contact.html">Contact</a>
         <a href="admin.html">Admin</a>
       </nav>
+      <!-- Hamburger Menu Icon -->
+      <div
+        class="hamburger"
+        id="hamburger"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+        role="button"
+        tabindex="0"
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </header>
 
-    <!-- Main container around content -->
     <div class="container">
-      <!-- Hero section: big header for Player Name + optional subtitle -->
       <div class="player-hero">
         <h1 id="playerName">Loading...</h1>
-        <h2>Player Details & History</h2>
+        <h2>Player Details &amp; History</h2>
       </div>
 
-      <!-- Player Matches Table -->
       <table class="matches">
         <thead>
           <tr>
@@ -46,6 +58,8 @@
       </table>
     </div>
 
-    <script src="player.js"></script>
+    <!-- JavaScript Files -->
+    <script src="/player.js"></script>
+    <script src="/nav.js"></script>
   </body>
 </html>

@@ -1,15 +1,16 @@
-<!-- Contact Page (contact.html) -->
+<!-- contact.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact - Seoul Pickleball League</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header>
-      <nav>
+      <!-- Navigation Bar -->
+      <nav id="navbar">
         <a href="index.html">Home</a>
         <a href="leaderboard.html">Leaderboard</a>
         <a href="schedule.html">Schedule</a>
@@ -19,6 +20,19 @@
         <a href="contact.html">Contact</a>
         <a href="admin.html">Admin</a>
       </nav>
+      <!-- Hamburger Menu Icon -->
+      <div
+        class="hamburger"
+        id="hamburger"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+        role="button"
+        tabindex="0"
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </header>
 
     <main>
@@ -44,5 +58,8 @@
     <footer>
       <p>&copy; 2024 Seoul Pickleball League. All rights reserved.</p>
     </footer>
+
+    <!-- JavaScript Files -->
+    <script src="/nav.js"></script>
   </body>
 </html>

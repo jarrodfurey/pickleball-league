@@ -1,3 +1,12 @@
+/* styles.css */
+
+/* Reset some default styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -5,84 +14,144 @@ body {
   background-color: #f4f4f9;
   color: #333;
 }
+
 header {
   background-color: #004d40;
   color: white;
   text-align: center;
   padding: 1rem 0;
+  position: relative; /* For positioning hamburger menu */
 }
+
 nav {
   display: flex;
   justify-content: center;
   background-color: #00695c;
+  flex-wrap: wrap; /* Allows items to wrap to the next line if necessary */
 }
+
 nav a {
   color: white;
   text-decoration: none;
   padding: 1rem;
   font-weight: bold;
+  transition: background-color 0.3s ease;
 }
+
 nav a:hover {
   background-color: #004d40;
 }
-.container {
-  margin: 2rem auto;
-  width: 90%;
-  max-width: 1200px;
+
+/* Hamburger Menu Styles */
+.hamburger {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 1000; /* Ensure it appears above other elements */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Adds depth */
 }
+
+.hamburger div {
+  width: 35px; /* Increased width for better visibility */
+  height: 5px; /* Slightly thicker lines */
+  background-color: #333; /* Dark gray for better contrast */
+  margin: 6px 0; /* Increased margin for spacing */
+  border-radius: 3px; /* Rounded corners for cleaner look */
+  transition: all 0.3s ease;
+}
+
+/* Active State for Hamburger (Optional: Animation) */
+.nav.active + .hamburger div:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+
+.nav.active + .hamburger div:nth-child(2) {
+  opacity: 0;
+}
+
+.nav.active + .hamburger div:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Container */
+.container {
+  margin: 2rem auto; /* Centers the container with top and bottom margin */
+  width: 90%; /* Responsive width */
+  max-width: 1200px; /* Maximum width */
+  padding: 1rem; /* Adds padding inside the container */
+  box-sizing: border-box; /* Includes padding within the width */
+}
+
 .leaderboard,
 .schedule,
 .rules,
 .announcements {
   margin-bottom: 2rem;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
 }
+
 table,
 th,
 td {
   border: 1px solid #ddd;
 }
+
 th,
 td {
   padding: 0.8rem;
   text-align: center;
 }
+
 th {
   background-color: #004d40;
   color: white;
 }
+
 .announcement {
   background-color: #e0f2f1;
   padding: 1rem;
   margin: 1rem 0;
   border-left: 5px solid #004d40;
 }
+
 .admin-form {
   background-color: #e0f7fa;
   padding: 1rem;
   margin: 2rem 0;
   border: 1px solid #004d40;
 }
+
 .admin-form h2 {
   color: #004d40;
 }
+
 footer {
   text-align: center;
   padding: 1rem 0;
   background-color: #004d40;
   color: white;
 }
+
 #login-section {
   display: none;
   margin: 2rem 0;
 }
+
 #admin {
   display: none;
 }
+
 .weeks-grid {
   display: flex;
   flex-wrap: wrap;
@@ -100,6 +169,7 @@ footer {
   border-radius: 0.25rem;
   font-weight: bold;
   text-align: center;
+  transition: all 0.3s ease;
 }
 
 .week-button:hover {
@@ -118,6 +188,7 @@ footer {
 .week-details.active {
   display: block;
 }
+
 .week-button.active {
   background-color: #ff6f00; /* Bright orange for visibility */
   color: white; /* Contrasting text color */
@@ -125,9 +196,8 @@ footer {
   border: 2px solid #ffd740; /* Yellow border for extra emphasis */
   transform: scale(1.1); /* Slightly larger button */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adds depth */
-  transition: all 0.3s ease; /* Smooth transition effect */
 }
-/* Alternate background colors for table rows */
+
 .week-details table tbody tr:nth-child(odd) {
   background-color: #e0f2f1; /* Light greenish background */
 }
@@ -135,6 +205,7 @@ footer {
 .week-details table tbody tr:nth-child(even) {
   background-color: #ffffff; /* White background */
 }
+
 .leaderboard a {
   color: #004d40; /* Use your primary color */
   text-decoration: none; /* Remove underlines */
@@ -152,6 +223,7 @@ footer {
   text-align: left; /* Align text to the left for better readability */
   padding: 0.5rem 1rem; /* Add padding for spacing */
 }
+
 .player-hero {
   background-color: #00695c; /* A teal color to match your site palette */
   color: white;
@@ -170,11 +242,13 @@ footer {
   font-weight: normal;
   font-size: 1.2rem;
 }
+
 .matches {
   width: 100%;
   margin-top: 2rem;
   border-collapse: collapse;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Ensures consistent column widths */
 }
 
 .matches th {
@@ -189,6 +263,7 @@ footer {
   padding: 1rem;
   border: 1px solid #ddd;
   text-align: center;
+  word-wrap: break-word; /* Prevents overflow */
 }
 
 .matches tbody tr:nth-child(even) {
@@ -199,14 +274,17 @@ footer {
   color: #28a745;
   font-weight: bold;
 }
+
 .loss {
   color: #dc3545;
   font-weight: bold;
 }
+
 .draw {
   color: #ffc107;
   font-weight: bold;
 }
+
 .cta {
   display: inline-block;
   padding: 0.75rem 1.5rem;
@@ -222,6 +300,7 @@ footer {
 .cta:hover {
   background-color: #004d40;
 }
+
 #hero {
   background-color: #00695c;
   text-align: center;
@@ -240,4 +319,91 @@ footer {
   max-width: 600px;
   margin: 0 auto 2rem auto;
   line-height: 1.5;
+}
+
+.table-responsive {
+  overflow-x: auto; /* Allows horizontal scrolling on small screens */
+}
+
+/* Responsive Media Queries */
+
+/* Small Devices (Mobile Phones) */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px; /* Reduces padding on smaller screens */
+  }
+
+  /* Show hamburger menu */
+  .hamburger {
+    display: flex;
+  }
+
+  /* Hide nav links initially */
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+    display: none; /* Hidden by default */
+    width: 100%;
+    background-color: #00695c;
+  }
+
+  /* Show nav links when active */
+  nav.active {
+    display: flex;
+  }
+
+  nav a {
+    width: 100%;
+    padding: 1rem;
+    border-top: 1px solid #004d40;
+  }
+
+  /* Responsive Tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive Buttons */
+  .week-button,
+  .btn,
+  .cta {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Very Small Devices (Extra Small Phones) */
+@media (max-width: 480px) {
+  nav a {
+    padding: 0.5rem 1rem;
+  }
+
+  /* Adjust font sizes for better readability */
+  body {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  .player-hero h1 {
+    font-size: 2rem;
+  }
+
+  .player-hero h2 {
+    font-size: 1rem;
+  }
 }
