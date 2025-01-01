@@ -9,8 +9,8 @@
     <!-- Font Awesome for Navigation Icons (Optional) -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      integrity="sha512-pCk4emg5G88fhrIg/OJrz90GYcKCe9R/ZKHX68tY6JvCUtjEN2eNj1kPSENlt1nNndIKXOr6mZ2VwKw5iTtj5g=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
@@ -43,24 +43,28 @@
       </div>
     </header>
 
-    <div class="container">
-      <h1>Seoul Pickleball League - Leaderboard</h1>
-      <table class="leaderboard">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Player Name</th>
-            <th>Matches Played</th>
-            <th>Wins</th>
-            <th>Win Rate (%)</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboardBody">
-          <!-- Leaderboard data will be populated here via JavaScript -->
-        </tbody>
-      </table>
-    </div>
+    <main>
+      <div class="container">
+        <h1>Seoul Pickleball League - Leaderboard</h1>
+        <div class="table-responsive">
+          <table class="leaderboard">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player Name</th>
+                <th>Matches Played</th>
+                <th>Wins</th>
+                <th>Win Rate (%)</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <!-- Leaderboard data will be populated here via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
 
     <footer>
       <p>&copy; 2024 Seoul Pickleball League. All rights reserved.</p>

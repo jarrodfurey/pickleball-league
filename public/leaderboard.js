@@ -1,19 +1,24 @@
-// public/leaderboard.js
+// leaderboard.js
 
 document.addEventListener("DOMContentLoaded", async () => {
   const leaderboardBody = document.getElementById("leaderboardBody");
 
   try {
-    const res = await fetch("/api/leaderboard");
+    const res = await fetch("/api/leaderboard"); // Adjust the URL if different
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const players = await res.json();
 
-    // Clear existing content (if any)
+    // Log the received players data for debugging
+    console.log("Received players data:", players);
+
+    // Clear existing content
     leaderboardBody.innerHTML = "";
 
     players.forEach((player, index) => {
+      console.log(`Processing player ${index + 1}:`, player); // Debugging log
+
       const row = document.createElement("tr");
 
       // Rank
@@ -21,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       rankCell.textContent = index + 1;
       row.appendChild(rankCell);
 
-      // Player Name (Clickable)
+      // Player Name
       const nameCell = document.createElement("td");
       const playerLink = document.createElement("a");
       playerLink.href = `/player.html?name=${encodeURIComponent(player.name)}`;
@@ -41,7 +46,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Win Rate
       const winRateCell = document.createElement("td");
-      winRateCell.textContent = player.winRate.toFixed(2); // Assuming winRate is a number
+      let winRate = parseFloat(player.winRate); // Convert to number
+      if (isNaN(winRate)) {
+        console.warn(
+          `Invalid winRate for player ${player.name}:`,
+          player.winRate
+        );
+        winRate = 0; // Default to 0 if invalid
+      }
+      winRateCell.textContent = winRate.toFixed(2);
       row.appendChild(winRateCell);
 
       // Points
@@ -51,12 +64,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       leaderboardBody.appendChild(row);
     });
-
-    // Optional: Sort Players by Points Descending (if not already sorted)
-    /*
-      players.sort((a, b) => b.points - a.points);
-      // Re-render the leaderboard
-      */
   } catch (error) {
     console.error("Error fetching leaderboard data:", error);
     leaderboardBody.innerHTML = `<tr><td colspan="6">Failed to load leaderboard.</td></tr>`;

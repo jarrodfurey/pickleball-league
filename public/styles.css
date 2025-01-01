@@ -8,9 +8,10 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures the body takes at least the full viewport height */
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
   background-color: #f4f4f9;
   color: #333;
 }
@@ -81,7 +82,7 @@ nav a:hover {
 
 /* Container */
 .container {
-  margin: 2rem auto; /* Centers the container with top and bottom margin */
+  margin: 0 auto; /* Centers the container horizontally */
   width: 90%; /* Responsive width */
   max-width: 1200px; /* Maximum width */
   padding: 1rem; /* Adds padding inside the container */
@@ -308,6 +309,10 @@ footer {
   padding: 2rem 1rem;
   margin-bottom: 2rem;
 }
+#hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
 
 #hero h2 {
   font-size: 2.5rem;
@@ -406,4 +411,15 @@ footer {
   .player-hero h2 {
     font-size: 1rem;
   }
+}
+main {
+  flex: 1; /* Allows main to grow and take up available space, pushing the footer to the bottom */
+}
+section h2 {
+  color: #004d40;
+  margin-bottom: 1rem;
+  text-align: center; /* Centers the section headings */
+}
+section {
+  margin-bottom: 2rem;
 }

@@ -1,7 +1,7 @@
 {
   "players": [
     {
-      "name": "Kyu",
+      "name": "FKyuF",
       "matchesPlayed": 11,
       "wins": 7,
       "winRate": "63.6",
@@ -64,7 +64,7 @@
       "points": 10
     },
     {
-      "name": "Jerry",
+      "name": "Kyu",
       "matchesPlayed": 8,
       "wins": 5,
       "winRate": 62.5,
@@ -110,7 +110,7 @@
     {
       "id": "match1",
       "team1": {
-        "player1": "Kyu",
+        "player1": "FKyuF",
         "player2": "Rory"
       },
       "team2": {

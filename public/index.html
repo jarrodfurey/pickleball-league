@@ -35,39 +35,44 @@
       </div>
     </header>
 
-    <!-- Hero or main banner for your site -->
-    <div class="hero-section" id="hero">
-      <h1>Welcome to the Seoul Pickleball League!</h1>
-      <p>Join us for exciting matches and friendly competition.</p>
-      <a href="schedule.html" class="cta">View Full Schedule</a>
-      <a href="leaderboard.html" class="cta">View Full Leaderboard</a>
-    </div>
+    <!-- Main Content Wrapper -->
+    <main>
+      <!-- Hero or main banner for your site -->
+      <div class="hero-section" id="hero">
+        <h1>Welcome to the Seoul Pickleball League!</h1>
+        <p>Join us for exciting matches and friendly competition.</p>
+        <a href="schedule.html" class="cta">View Full Schedule</a>
+        <a href="leaderboard.html" class="cta">View Full Leaderboard</a>
+      </div>
 
-    <!-- Container for the Previews -->
-    <div class="container">
-      <section id="schedule-preview">
-        <h2>Upcoming Matches</h2>
-        <div id="schedulePreviewContent">
-          <!-- JavaScript will populate upcoming matches here -->
-        </div>
-      </section>
+      <!-- Container for the Previews -->
+      <div class="container">
+        <section id="schedule-preview">
+          <h2>Upcoming Matches</h2>
+          <div id="schedulePreviewContent">
+            <!-- JavaScript will populate upcoming matches here -->
+          </div>
+        </section>
 
-      <section id="leaderboard-preview">
-        <h2>Top Players</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Player</th>
-              <th>Points</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardPreviewContent">
-            <!-- JavaScript will populate top players here -->
-          </tbody>
-        </table>
-      </section>
-    </div>
+        <section id="leaderboard-preview">
+          <h2>Top Players</h2>
+          <div class="table-responsive">
+            <table class="leaderboard">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardPreviewContent">
+                <!-- JavaScript will populate top players here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
 
     <footer>
       <p>&copy; 2024 Seoul Pickleball League. All rights reserved.</p>
