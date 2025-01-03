@@ -35,9 +35,8 @@ app.use(
 // Serve static files from the "public" folder
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- Your API Routes Below ---
+// --- Helper Functions to Read/Write data.json ---
 
-// Helper Function: Read Data
 const readData = () => {
   const dataPath = path.join(__dirname, "data.json");
   try {
@@ -49,7 +48,6 @@ const readData = () => {
   }
 };
 
-// Helper Function: Write Data
 const writeData = (data) => {
   const dataPath = path.join(__dirname, "data.json");
   try {
@@ -60,7 +58,12 @@ const writeData = (data) => {
   }
 };
 
-// Endpoint to get leaderboard data
+// --- API Routes ---
+
+/**
+ * GET /api/leaderboard
+ * Returns a list of players who have played at least one match, sorted by points desc, then winRate desc
+ */
 app.get("/api/leaderboard", (req, res) => {
   try {
     const data = readData();
@@ -78,7 +81,10 @@ app.get("/api/leaderboard", (req, res) => {
   }
 });
 
-// Endpoint to get all matches
+/**
+ * GET /api/matches
+ * Returns all matches from data.json
+ */
 app.get("/api/matches", (req, res) => {
   try {
     const data = readData();
@@ -88,7 +94,10 @@ app.get("/api/matches", (req, res) => {
   }
 });
 
-// Endpoint to get player details
+/**
+ * GET /api/player
+ * Returns data about a specific player, including match history (only completed matches, i.e., winner != null)
+ */
 app.get("/api/player", (req, res) => {
   const playerName = req.query.name;
 
@@ -104,26 +113,27 @@ app.get("/api/player", (req, res) => {
       return res.status(404).json({ error: "Player not found." });
     }
 
-    // Find all matches involving this player that have been played (winner is not null)
+    // Find all matches involving this player that have been completed
     const matchHistory = data.matches.filter(
       (m) =>
         (m.team1.player1 === playerName ||
           m.team1.player2 === playerName ||
           m.team2.player1 === playerName ||
           m.team2.player2 === playerName) &&
-        m.winner // Only include matches that have been played
+        m.winner // Only include matches that have a winner (completed)
     );
 
-    // Attach match history to player data
     const playerData = { ...player, matchHistory };
-
     res.json(playerData);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// Endpoint to update match results with validation
+/**
+ * POST /api/update-match
+ * Updates the scores and winner of a match, reverting any previously awarded points before re-awarding
+ */
 app.post(
   "/api/update-match",
   [
@@ -162,7 +172,7 @@ app.post(
       const match = data.matches[matchIndex];
       const previousWinner = match.winner;
 
-      // Revert previous match outcome if it exists
+      // --- Revert previous match outcome if it exists ---
       if (previousWinner) {
         if (previousWinner === "team1" || previousWinner === "team2") {
           const winningTeam =
@@ -176,7 +186,7 @@ app.post(
             if (player) {
               player.matchesPlayed -= 1;
               player.wins -= 1;
-              player.points -= 2;
+              player.points -= 2; // Assuming 2 points for a win
               player.winRate = player.matchesPlayed
                 ? ((player.wins / player.matchesPlayed) * 100).toFixed(1)
                 : "0.0";
@@ -189,14 +199,14 @@ app.post(
             if (player) {
               player.matchesPlayed -= 1;
               // Losers do not have wins, so no change to 'wins'
-              // No change to points for losers unless you have a point system for participation
+              // No point change for losers unless you track participation points
               player.winRate = player.matchesPlayed
                 ? ((player.wins / player.matchesPlayed) * 100).toFixed(1)
                 : "0.0";
             }
           });
         } else if (previousWinner === "Draw") {
-          // Revert draw: decrement matchesPlayed and adjust points if applicable
+          // Revert draw: decrement matchesPlayed, remove any draw points
           [
             match.team1.player1,
             match.team1.player2,
@@ -206,8 +216,7 @@ app.post(
             const player = data.players.find((p) => p.name === playerName);
             if (player) {
               player.matchesPlayed -= 1;
-              player.points -= 1; // Assuming 1 point was awarded for a draw
-              // No change to 'wins' since it was a draw
+              player.points -= 1; // Assuming 1 point for a draw
               player.winRate = player.matchesPlayed
                 ? ((player.wins / player.matchesPlayed) * 100).toFixed(1)
                 : "0.0";
@@ -216,12 +225,11 @@ app.post(
         }
       }
 
-      // Update match scores and determine new winner only if scores are provided
+      // --- Update match scores & determine new winner ---
       if (team1Score !== null && team2Score !== null) {
         match.team1Score = parseInt(team1Score, 10);
         match.team2Score = parseInt(team2Score, 10);
 
-        // Determine new winner
         if (match.team1Score > match.team2Score) {
           match.winner = "team1";
         } else if (match.team2Score > match.team1Score) {
@@ -230,7 +238,7 @@ app.post(
           match.winner = "Draw";
         }
 
-        // Apply new match outcome
+        // --- Apply new match outcome ---
         if (match.winner === "team1" || match.winner === "team2") {
           const winningTeam =
             match.winner === "team1" ? match.team1 : match.team2;
@@ -243,7 +251,7 @@ app.post(
             if (player) {
               player.matchesPlayed += 1;
               player.wins += 1;
-              player.points += 2;
+              player.points += 2; // Assuming 2 points for a win
               player.winRate = (
                 (player.wins / player.matchesPlayed) *
                 100
@@ -257,7 +265,7 @@ app.post(
             if (player) {
               player.matchesPlayed += 1;
               // Losers do not get wins
-              // No points deduction unless applicable
+              // No points for losers unless you have partial-credit logic
               player.winRate = (
                 (player.wins / player.matchesPlayed) *
                 100
@@ -265,7 +273,7 @@ app.post(
             }
           });
         } else if (match.winner === "Draw") {
-          // Update draw stats: increment matchesPlayed and assign points if applicable
+          // Everyone gets 1 point, matchesPlayed +1
           [
             match.team1.player1,
             match.team1.player2,
@@ -275,8 +283,7 @@ app.post(
             const player = data.players.find((p) => p.name === playerName);
             if (player) {
               player.matchesPlayed += 1;
-              player.points += 1; // Assuming 1 point for a draw
-              // No change to 'wins' since it's a draw
+              player.points += 1; // 1 point each for a draw
               player.winRate = (
                 (player.wins / player.matchesPlayed) *
                 100
@@ -285,7 +292,7 @@ app.post(
           });
         }
       } else {
-        // If scores are not provided, reset winner to null (mark as unplayed)
+        // If scores are not provided, reset to unplayed
         match.winner = null;
       }
 
@@ -299,7 +306,88 @@ app.post(
   }
 );
 
-// Endpoint to create matches from schedule
+/**
+ * POST /api/replace-player
+ * Replaces a missing player with a sub name for all matches in a given week.
+ * Example: { "weekNumber": 1, "missingPlayer": "Jerry", "subName": "sub1" }
+ */
+app.post(
+  "/api/replace-player",
+  [
+    body("weekNumber")
+      .isInt({ min: 1 })
+      .withMessage("Week number must be >= 1."),
+    body("missingPlayer")
+      .isString()
+      .trim()
+      .notEmpty()
+      .withMessage("Missing player name is required."),
+    body("subName")
+      .isString()
+      .trim()
+      .notEmpty()
+      .withMessage("Substitute name is required."),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // Return validation errors with 400 Bad Request
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    let { weekNumber, missingPlayer, subName } = req.body;
+    weekNumber = parseInt(weekNumber, 10);
+
+    try {
+      const data = readData();
+      let replacements = 0;
+
+      // For each match, if match.id starts with "week<weekNumber>-..."
+      data.matches.forEach((match) => {
+        const weekRegex = /^week(\d+)-match/i;
+        const matchWeekMatch = match.id.match(weekRegex);
+        if (!matchWeekMatch) return; // skip if ID doesn't match pattern
+
+        const matchWeek = parseInt(matchWeekMatch[1], 10);
+        if (matchWeek !== weekNumber) return; // skip if not the requested week
+
+        // Check each player's name
+        ["team1", "team2"].forEach((teamKey) => {
+          if (match[teamKey].player1 === missingPlayer) {
+            match[teamKey].player1 = subName;
+            replacements++;
+          }
+          if (match[teamKey].player2 === missingPlayer) {
+            match[teamKey].player2 = subName;
+            replacements++;
+          }
+        });
+      });
+
+      writeData(data);
+
+      if (replacements > 0) {
+        res.json({
+          message: `Successfully replaced '${missingPlayer}' with '${subName}' in ${replacements} spot(s) for Week ${weekNumber}.`,
+        });
+      } else {
+        res.json({
+          message: `No occurrences of '${missingPlayer}' found in Week ${weekNumber} matches. No changes made.`,
+        });
+      }
+    } catch (error) {
+      console.error("Error replacing player:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while replacing the player." });
+    }
+  }
+);
+
+/**
+ * POST /api/create-matches-from-schedule
+ * Creates (or updates) matches from an external schedule file (schedule.json).
+ */
 app.post(
   "/api/create-matches-from-schedule",
   basicAuth({
@@ -317,62 +405,55 @@ app.post(
       const dataPath = path.join(__dirname, "data.json");
       const data = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
 
-      // Function to generate unique match IDs
-      // Now includes court number to ensure uniqueness
+      // Helper to generate unique match ID (includes court #)
       const generateMatchId = (week, matchIndex, courtNumber) =>
         `week${week}-match${matchIndex + 1}-court${courtNumber}`;
 
-      // Function to calculate the date based on week number
+      // Helper to get date for each week
       const getDateForWeek = (weekNumber) => {
-        // Define the start date for week 1 (January 4th, 2025)
-        const startDate = new Date("2025-01-04"); // Adjust the year if necessary
+        // Define the start date for week 1 (Jan 4th, 2025)
+        const startDate = new Date("2025-01-04");
 
         // Calculate the date for the given week
         const matchDate = new Date(startDate);
         matchDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
 
-        // Format the date as YYYY-MM-DD
+        // Format as YYYY-MM-DD
         const year = matchDate.getFullYear();
-        const month = String(matchDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+        const month = String(matchDate.getMonth() + 1).padStart(2, "0");
         const day = String(matchDate.getDate()).padStart(2, "0");
-
         return `${year}-${month}-${day}`;
       };
 
+      // Iterate over each week
       scheduleData.forEach((week) => {
         const { week: weekNumber, matchups } = week;
-
-        // Calculate the date for this week
         const matchDate = getDateForWeek(weekNumber);
 
-        // Iterate over each matchup and each court within the matchup
+        // For each matchup row
         matchups.forEach((matchup, index) => {
           const [timeSlot, court1, court2] = matchup;
-
-          // Array to hold court-specific matches
           const courts = [court1, court2];
 
           courts.forEach((court, courtIndex) => {
-            // Skip FREE BLOCKs
-            if (court === "FREE BLOCK") return;
+            if (court === "FREE BLOCK") return; // skip
 
-            // Extract team players
+            // Example "Bonez/Toole vs Greg/Mandre"
             const [teamStr, opponentStr] = court.split(" vs ");
-
             const teamPlayers = teamStr.split("/");
             const opponentPlayers = opponentStr.split("/");
 
-            // Ensure there are exactly two players per team
+            // Ensure valid teams
             if (teamPlayers.length !== 2 || opponentPlayers.length !== 2) {
               console.warn(
                 `Invalid team format in week ${weekNumber}, match ${
                   index + 1
-                }, court ${courtIndex + 1}. Skipping match creation.`
+                }, court ${courtIndex + 1}.`
               );
               return;
             }
 
-            // Create match entry
+            // Build match object
             const match = {
               id: generateMatchId(weekNumber, index, courtIndex + 1),
               team1: {
@@ -383,19 +464,19 @@ app.post(
                 player1: opponentPlayers[0].trim(),
                 player2: opponentPlayers[1].trim(),
               },
-              team1Score: null, // Initially no score
-              team2Score: null, // Initially no score
-              winner: null, // Initially no winner
-              date: matchDate, // Assign the calculated date
+              team1Score: null,
+              team2Score: null,
+              winner: null,
+              date: matchDate,
             };
 
-            // Add match to data if it doesn't already exist
+            // If match doesn't exist, add it
             const existingMatch = data.matches.find((m) => m.id === match.id);
             if (!existingMatch) {
               data.matches.push(match);
               console.log(`Created match: ${match.id}`);
             } else {
-              // Optionally, update the date if the match already exists
+              // Optionally update date if match already exists
               existingMatch.date = matchDate;
               console.log(`Updated date for existing match: ${match.id}`);
             }
@@ -403,7 +484,7 @@ app.post(
         });
       });
 
-      // Save updated data back to data.json
+      // Save changes
       writeData(data);
       res.json({ message: "Matches created successfully from schedule." });
     } catch (error) {

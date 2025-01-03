@@ -1,5 +1,4 @@
 <!-- public/admin.html -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -133,10 +132,41 @@
       <div id="updateMatchResponse" class="response"></div>
     </section>
 
+    <!-- Replace Player with Sub Form -->
+    <section>
+      <h2>Replace Player with Sub</h2>
+      <form id="replacePlayerForm">
+        <div>
+          <label for="weekNumber">Week Number:</label>
+          <input
+            type="number"
+            id="weekNumber"
+            name="weekNumber"
+            min="1"
+            required
+          />
+        </div>
+
+        <div>
+          <label for="missingPlayer">Missing Player:</label>
+          <input type="text" id="missingPlayer" name="missingPlayer" required />
+        </div>
+
+        <div>
+          <label for="subName">Substitute Name:</label>
+          <input type="text" id="subName" name="subName" required />
+        </div>
+
+        <button type="submit">Replace Player</button>
+      </form>
+      <div id="replacePlayerResponse" class="response"></div>
+    </section>
+
     <script>
       // public/admin.js
 
       document.addEventListener("DOMContentLoaded", () => {
+        // Existing code for createMatchForm & updateMatchForm...
         const createMatchForm = document.getElementById("createMatchForm");
         const updateMatchForm = document.getElementById("updateMatchForm");
         const createMatchResponse = document.getElementById(
@@ -271,7 +301,62 @@
             );
           }
         });
-      }); // <-- Closing brace for DOMContentLoaded
+
+        // NEW: Handle Replace Player Form Submission
+        const replacePlayerForm = document.getElementById("replacePlayerForm");
+        const replacePlayerResponse = document.getElementById(
+          "replacePlayerResponse"
+        );
+
+        replacePlayerForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(replacePlayerForm);
+          const data = {
+            weekNumber: formData.get("weekNumber"),
+            missingPlayer: formData.get("missingPlayer").trim(),
+            subName: formData.get("subName").trim(),
+          };
+
+          try {
+            const res = await fetch("/api/replace-player", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+              displayResponse(
+                replacePlayerResponse,
+                result.message || "Player replaced successfully.",
+                true
+              );
+              replacePlayerForm.reset();
+            } else {
+              // If there's any error, show it
+              const errors = result.errors
+                ? result.errors.map((err) => `<li>${err.msg}</li>`).join("")
+                : `<p>${result.error}</p>`;
+              displayResponse(
+                replacePlayerResponse,
+                `<ul>${errors}</ul>`,
+                false
+              );
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            displayResponse(
+              replacePlayerResponse,
+              "An unexpected error occurred.",
+              false
+            );
+          }
+        });
+      });
     </script>
   </body>
 </html>
